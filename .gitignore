@@ -1,0 +1,28 @@
+# Local environments and dependencies
+.venv/
+venv/
+node_modules/
+
+# Generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+coverage/
+*.log
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# macOS metadata
+.DS_Store
+._*
+__MACOSX/
+
+# Runtime database
+/application/semantic-search-api/ticket-knowledgebase.db
