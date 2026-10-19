@@ -89,7 +89,8 @@ app.post('/api/tickets/similar', async (req, res) => {
     }
 });
 
-app.post('/api/tickets', async (req, res) => {
+//post to create a new ticket
+app.post('/api/add/ticket', async (req, res) => {
   try {
     const { subject, description = '' } = req.body;
     if (!subject || typeof subject !== 'string') {
