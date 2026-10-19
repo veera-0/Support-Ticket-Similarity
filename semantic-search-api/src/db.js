@@ -11,7 +11,7 @@ const createQuery = `
     resolution_notes TEXT,
     tags             TEXT,            
     created_at       TEXT,
-    status           TEXT,
+    status           TEXT DEFAULT 'OPEN',
     vector           BLOB NOT NULL
   )
 `
@@ -65,6 +65,25 @@ export function getTicketById(ticket_id){
             .get(ticket_id);
 
     return row ? rowToTicket(row) : null;
+}
+
+export function updateTicket(ticket_id, ticketData) {
+  const existingTicket = getTicketById(ticket_id);
+  if (!existingTicket) {
+    throw new Error(`Ticket with ID ${ticket_id} not found`);
+  }
+  const updateStmt = db.prepare(`
+    UPDATE tickets
+    SET category = @category,
+        resolution_notes = @resolution_notes,
+        tags = @tags,
+        status = @status
+    WHERE ticket_id = @ticket_id
+  `);
+  updateStmt.run({
+    ...ticketData,
+    ticket_id: ticket_id
+  });
 }
 
 export function rowToTicket(r) {

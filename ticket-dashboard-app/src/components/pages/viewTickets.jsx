@@ -10,13 +10,16 @@ function ViewTickets() {
 
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState('');
 
     const hasStatus = (ticket, status) =>
         typeof ticket.status === "string" &&
         ticket.status.trim().toLowerCase() === status;
+
     const openTickets = tickets.filter(
         (ticket) => hasStatus(ticket, "open")
     );
+    
     const resolvedTickets = tickets.filter(
         (ticket) => hasStatus(ticket, "resolved")
     );
@@ -29,6 +32,7 @@ function ViewTickets() {
                 setTickets(results);
             } catch (error) {
                 console.error('Error getting tickets:', error);
+                setLoadError('Unable to load tickets. Please try again later.');
             } finally {
                 setLoading(false);
             }
@@ -51,6 +55,10 @@ function ViewTickets() {
                 {loading ? (
                     <p className="view-tickets-message" role="status">
                         Loading tickets...
+                    </p>
+                ) : loadError ? (
+                    <p className="view-tickets-message" role="alert">
+                        {loadError}
                     </p>
                 ) : (
                     <>

@@ -25,4 +25,5 @@ coverage/
 __MACOSX/
 
 # Runtime database
-/application/semantic-search-api/ticket-knowledgebase.db
+semantic-search-api/ticket-knowledgebase.db
+semantic-search-api/ticket-knowledgebase.db

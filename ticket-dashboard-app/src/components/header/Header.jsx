@@ -17,7 +17,7 @@ function Header() {
                         Home
                     </NavLink>
                     <NavLink
-                        to="/tickets"
+                        to="/view-all-tickets"
                         className={({ isActive }) =>
                             isActive ? 'site-nav__link active' : 'site-nav__link'
                         }

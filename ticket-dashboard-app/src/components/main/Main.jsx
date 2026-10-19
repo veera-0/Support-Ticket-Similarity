@@ -1,11 +1,8 @@
-import Footer from '../footer/Footer';
-import Header from '../header/Header';
 import './main.css';
 
 function Main() {
     return (
         <div className="landing-page">
-            <Header />
             <main className="landing-main">
                 <section className="intro-hero">
                     <div className="intro-copy">
@@ -82,7 +79,6 @@ function Main() {
                     </article>
                 </section>
             </main>
-            <Footer />
         </div>
     );
 }

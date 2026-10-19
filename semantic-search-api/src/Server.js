@@ -122,5 +122,33 @@ app.post('/api/add/ticket', async (req, res) => {
     res.status(500).json({ error: 'Could not add ticket' });
   }
 });
+
+//update the existing ticket based on the anslysis
+app.post('/api/update/ticket/:id', async (req, res) => {
+  try{
+    const ticketId = req.params.id;
+    const retlatedTicket = getTicketById(ticketId);
+    if (!retlatedTicket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    
+    const ticket = {
+      ...retlatedTicket,
+      category: req.body.category ?? retlatedTicket.category,
+      resolution_notes: req.body.resolution_notes ?? retlatedTicket.resolution_notes,
+      tags: Array.isArray(req.body.tags) ? req.body.tags : retlatedTicket.tags,
+      status: req.body.status ?? retlatedTicket.status,
+    }
+
+    //update the record in the db
+    updateTicket(ticketId, ticket);
+    index.push({ ...ticket, vector: retlatedTicket.vector }); 
+    res.status(200).json(ticket);
+
+  } catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Could not update ticket' });
+  }
+});
  
 app.listen(port, () => console.log(`API running on http://localhost:${port}`));

@@ -1,14 +1,24 @@
 
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'http://localhost:8081/api';
 
 export async function getAllTickets() {
-    return fetch(`${API_URL}/tickets`)
-        .then(response => response.json())
-        .catch(error => {
-            console.error('Error fetching tickets:', error);
-            throw error;
-        });
+    try {
+        const response = await fetch(`${API_URL}/tickets`);
+        if (!response.ok) {
+            throw new Error(`Error fetching tickets: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        if (!Array.isArray(result.tickets)) {
+            throw new Error('Invalid tickets response: expected a tickets array');
+        }
+
+        return result.tickets;
+    } catch (error) {
+        console.error('Error fetching tickets:', error);
+        throw error;
+    }
 }
 
 export async function getTicketById(ticketId) {

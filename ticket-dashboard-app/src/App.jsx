@@ -9,7 +9,6 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/view-all-tickets" element={<ViewTickets />} />
-                <Route path="/tickets" element={<Main />} />
                 <Route path="/new-tickets" element={<Main />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
