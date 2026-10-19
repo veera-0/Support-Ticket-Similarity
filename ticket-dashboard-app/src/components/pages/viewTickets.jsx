@@ -1,14 +1,25 @@
 
-import { getAllTickets } from "../../../service/SemanticSearchService"
+import { getAllTickets } from "../../service/SemanticSearchService"
 import { useState, useEffect } from "react";
-import TicketProp from "../../main/ticketProp/TicketProp";
-import Header from "../../header/Header";
-import Footer from "../../footer/Footer";
+import TicketProp from "../main/ticketProp/TicketProp";
+import Header from "../header/Header";
+import Footer from "../footer/Footer";
+import "../../App.css";
 
 function ViewTickets() {
 
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const hasStatus = (ticket, status) =>
+        typeof ticket.status === "string" &&
+        ticket.status.trim().toLowerCase() === status;
+    const openTickets = tickets.filter(
+        (ticket) => hasStatus(ticket, "open")
+    );
+    const resolvedTickets = tickets.filter(
+        (ticket) => hasStatus(ticket, "resolved")
+    );
 
     useEffect(() => {
         const getTickets = async () => {
@@ -26,22 +37,72 @@ function ViewTickets() {
         getTickets();
     }, []);
 
-    return(
-        <>
-            <Header/>
-            <h1>All Tickets</h1>
-            {loading ? (
-                <p>Loading tickets...</p>
-            ) : (
-                <ul>
-                    {tickets.map((ticket) => (
-                        <TicketProp key={ticket.id} ticket={ticket} />
-                    ))}
-                </ul>
-            )}
-            <Footer/>
-        </>
-    )
+    return (
+        <div className="view-tickets-page">
+            <Header />
+            <main className="view-tickets-content">
+                <header className="view-tickets-heading">
+                    <p className="view-tickets-eyebrow">SUPPORT INBOX</p>
+                    <h2>All tickets</h2>
+                    <p className="view-tickets-description">
+                        Browse support requests and the details shared by customers.
+                    </p>
+                </header>
+                {loading ? (
+                    <p className="view-tickets-message" role="status">
+                        Loading tickets...
+                    </p>
+                ) : (
+                    <>
+                        <section className="ticket-status-section" aria-labelledby="open-tickets-title">
+                            <header className="ticket-status-section__heading">
+                                <div>
+                                    <h3 id="open-tickets-title">Open tickets</h3>
+                                    <p>Tickets that still need attention</p>
+                                </div>
+                                <span className="ticket-status-count">{openTickets.length}</span>
+                            </header>
+                            {openTickets.length > 0 ? (
+                                <div className="view-tickets-grid">
+                                    {openTickets.map((ticket) => (
+                                        <TicketProp key={ticket.ticket_id} ticket={ticket} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="view-tickets-message">
+                                    No open tickets right now.
+                                </p>
+                            )}
+                        </section>
+
+                        <section className="ticket-status-section" aria-labelledby="resolved-tickets-title">
+                            <header className="ticket-status-section__heading">
+                                <div>
+                                    <h3 id="resolved-tickets-title">Resolved tickets</h3>
+                                    <p>Tickets that have been completed</p>
+                                </div>
+                                <span className="ticket-status-count ticket-status-count--resolved">
+                                    {resolvedTickets.length}
+                                </span>
+                            </header>
+                            {resolvedTickets.length > 0 ? (
+                                <div className="view-tickets-grid">
+                                    {resolvedTickets.map((ticket) => (
+                                        <TicketProp key={ticket.ticket_id} ticket={ticket} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="view-tickets-message">
+                                    No resolved tickets yet.
+                                </p>
+                            )}
+                        </section>
+                    </>
+                )}
+            </main>
+            <Footer />
+        </div>
+    );
 
 }
 
