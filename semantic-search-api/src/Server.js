@@ -24,6 +24,7 @@ const sharedTicket = ({ vector, ...rest}) => rest;
 
 // health check
 app.get('/api/health', (_req, res) => {
+  console.log('Health check requested');
   res.json({ status: 'ok', tickets: index.length });
 });
 
@@ -39,6 +40,7 @@ app.get('/api/tickets', (req, res) => {
 
 //get ticket by id
 app.get('/api/tickets/:id', (req, res) => {
+  console.log(`Received request to get ticket with ID: ${req.params.id}`);
   const t = getTicketById(req.params.id);
   if (!t) return res.status(404).json({ error: 'Ticket not found' });
   res.json(sharedTicket(t));
@@ -46,6 +48,7 @@ app.get('/api/tickets/:id', (req, res) => {
 
 // post to check the similar tickets
 app.post('/api/tickets/similar', async (req, res) => {
+    console.log('Received request to find similar tickets:', req.body);
     try{
         const { subject, description='', topK=5, minScore = 0} = req.body;
 
@@ -77,6 +80,7 @@ app.post('/api/tickets/similar', async (req, res) => {
                 match: matchLabel(score),
             }));
 
+        console.log(`Found ${results.length} similar tickets for subject: "${subject}"`);
         res.json({
             query: { subject, description },
             possible_duplicate: results.length > 0 && results[0].score >= 0.75,
@@ -91,6 +95,7 @@ app.post('/api/tickets/similar', async (req, res) => {
 
 //post to create a new ticket
 app.post('/api/add/ticket', async (req, res) => {
+  console.log('Received request to add ticket:', req.body);
   try {
     const { subject, description = '' } = req.body;
     if (!subject || typeof subject !== 'string') {
@@ -113,8 +118,9 @@ app.post('/api/add/ticket', async (req, res) => {
     }
  
     const [vec] = await embed(ticketText(ticket));
-    insertTicket(ticket, vec);                                  // persist
-    index.push({ ...ticket, vector: Float32Array.from(vec) });  // update memory
+    console.log('inserting new ticket data into database:', ticket);
+    insertTicket(ticket, vec);                                  
+    index.push({ ...ticket, vector: Float32Array.from(vec) });  
  
     res.status(201).json(ticket);
   } catch (err) {
@@ -125,6 +131,7 @@ app.post('/api/add/ticket', async (req, res) => {
 
 //update the existing ticket based on the anslysis
 app.post('/api/update/ticket/:id', async (req, res) => {
+  console.log(`Received request to update ticket ${req.params.id}:`, req.body);
   try{
     const ticketId = req.params.id;
     const retlatedTicket = getTicketById(ticketId);
@@ -141,6 +148,7 @@ app.post('/api/update/ticket/:id', async (req, res) => {
     }
 
     //update the record in the db
+    console.log(`Updating ticket ${ticketId} in the database with data:`, ticket);
     updateTicket(ticketId, ticket);
     index.push({ ...ticket, vector: retlatedTicket.vector }); 
     res.status(200).json(ticket);

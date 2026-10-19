@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Home from './components/pages/Home';
 import ViewTickets from './components/pages/viewTickets';
-import AddTicket from './components/main/newTicket/addTicket';
+import AddTicket from './components/main/newTicket/TicketForm';
 
 function App() {
     return (

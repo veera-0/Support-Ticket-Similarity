@@ -26,4 +26,5 @@ __MACOSX/
 
 # Runtime database
 semantic-search-api/ticket-knowledgebase.db
-semantic-search-api/ticket-knowledgebase.db
+semantic-search-api/ticket-knowledgebase.db-shm
+semantic-search-api/ticket-knowledgebase.db-wal
