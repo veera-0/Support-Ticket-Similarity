@@ -27,12 +27,14 @@ function hasValue(value) {
     return true;
 }
 
-export default function TicketProp({ ticket }) {
+export default function TicketProp({ ticket, showTicketId = true }) {
     if (!ticket) {
         return null;
     }
 
-    const visibleFields = ticketFields.filter(([field]) => hasValue(ticket[field]));
+    const visibleFields = ticketFields.filter(
+        ([field]) => (showTicketId || field !== 'ticket_id') && hasValue(ticket[field])
+    );
     const tags = Array.isArray(ticket.tags)
         ? ticket.tags.filter((tag) => hasValue(tag))
         : [];

@@ -94,9 +94,27 @@ function ViewTickets() {
                                 </span>
                             </header>
                             {resolvedTickets.length > 0 ? (
-                                <div className="view-tickets-grid">
+                                <div className="resolved-ticket-list">
                                     {resolvedTickets.map((ticket) => (
-                                        <TicketProp key={ticket.ticket_id} ticket={ticket} />
+                                        <details className="resolved-ticket" key={ticket.ticket_id}>
+                                            <summary className="resolved-ticket__summary">
+                                                <span className="resolved-ticket__id">
+                                                    {ticket.ticket_id || 'Ticket ID unavailable'}
+                                                </span>
+                                                <span className="resolved-ticket__toggle">
+                                                    <span className="resolved-ticket__toggle-label">
+                                                        View details
+                                                    </span>
+                                                    <span
+                                                        className="resolved-ticket__chevron"
+                                                        aria-hidden="true"
+                                                    />
+                                                </span>
+                                            </summary>
+                                            <div className="resolved-ticket__details">
+                                                <TicketProp ticket={ticket} showTicketId={false} />
+                                            </div>
+                                        </details>
                                     ))}
                                 </div>
                             ) : (

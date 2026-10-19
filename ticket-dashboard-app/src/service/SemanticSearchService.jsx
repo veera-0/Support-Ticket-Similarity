@@ -36,24 +36,21 @@ export async function getTicketById(ticketId) {
     }
 
 export async function createTicket(ticketData) {
-    return fetch(`${API_URL}/tickets`, {
+    const response = await fetch(`${API_URL}/add/ticket`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(ticketData),
-        })
-        .then(response => {     
-         if (!response.ok) {
-                throw new Error(`Error creating ticket: ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .catch(error => {
-            console.error('Error creating ticket:', error);
-            throw error;
-        });
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+        throw new Error(result.error || `Error creating ticket: ${response.statusText}`);
     }
+
+    return result;
+}
 
 export async function healthCheck() {
     return fetch(`${API_URL}/health`)
