@@ -1,0 +1,45 @@
+.ticket-prop {
+    display: grid;
+    gap: 16px;
+    padding: 20px;
+    border: 1px solid #e5e9f0;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.ticket-prop__field {
+    display: grid;
+    gap: 5px;
+}
+
+.ticket-prop__label {
+    color: #77849a;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.ticket-prop__value {
+    color: #263247;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+.ticket-prop__value--ticket_id {
+    color: #315fe8;
+    font-weight: 650;
+}
+
+.ticket-prop__value--subject {
+    font-weight: 600;
+}
+
+.ticket-prop__value--description,
+.ticket-prop__value--resolution_notes {
+    white-space: pre-wrap;
+}
+
+.ticket-prop__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}

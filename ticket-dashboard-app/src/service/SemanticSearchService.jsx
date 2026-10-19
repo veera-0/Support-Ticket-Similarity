@@ -2,7 +2,7 @@
 
 const API_URL = 'http://localhost:3000/api';
 
-export function getAllTickets() {
+export async function getAllTickets() {
     return fetch(`${API_URL}/tickets`)
         .then(response => response.json())
         .catch(error => {
@@ -11,7 +11,7 @@ export function getAllTickets() {
         });
 }
 
-export function getTicketById(ticketId) {
+export async function getTicketById(ticketId) {
     return fetch(`${API_URL}/tickets/${ticketId}`)
         .then(response => {
             if (!response.ok) {
@@ -25,7 +25,7 @@ export function getTicketById(ticketId) {
         });
     }
 
-export function createTicket(ticketData) {
+export async function createTicket(ticketData) {
     return fetch(`${API_URL}/tickets`, {
         method: 'POST',
         headers: {
@@ -45,7 +45,7 @@ export function createTicket(ticketData) {
         });
     }
 
-export function healthCheck() {
+export async function healthCheck() {
     return fetch(`${API_URL}/health`)
         .then(response => response.json())
         .catch(error => {
@@ -54,7 +54,7 @@ export function healthCheck() {
         });
 }
 
-export function semanticSearch(query) {
+export async function semanticSearch(query) {
     return fetch(`${API_URL}/semantic-search`, {
         method: 'POST',
         headers: {
@@ -74,7 +74,7 @@ export function semanticSearch(query) {
         });
     }
 
-export function updateTicket(ticket_id, updatedTicket) {
+export async function updateTicket(ticket_id, updatedTicket) {
     return fetch(`${API_URL}/update/ticket/${ticket_id}`, {
         method: 'POST',
         headers: {
