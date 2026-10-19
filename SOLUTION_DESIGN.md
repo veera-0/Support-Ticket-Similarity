@@ -42,6 +42,14 @@ When an agent opens a ticket and requests similar history, the API embeds the ti
 
 New tickets are submitted through the React form. The API assigns an ID and creation date, defaults the status to open, generates and stores the embedding, and updates its in-memory index so the ticket is immediately searchable. The implementation and local startup steps are documented in [README.md](./README.md).
 
+## Database architecture
+
+SQLite is the system of record for ticket data. A single `tickets` table stores each ticket's ID, category, subject, description, resolution notes, tags, creation date, status, and embedding vector. Tags are serialized as JSON text, while each normalized embedding is stored as a `Float32` binary blob. The vector is kept alongside its ticket so the API can load ticket details and search vectors from the same local database without a separate vector store.
+
+On startup, the API creates the table if it does not exist and seeds it from `semantic-search-api/src/data/tickets.json` only when it is empty. It then loads all rows and vectors into an in-memory index. Similarity searches compute an embedding for the incoming ticket and compare it with that index using cosine similarity. Ticket creation writes the ticket and vector to SQLite and adds them to the running index; resolution updates persist ticket metadata to SQLite and update the index.
+
+For the Docker Compose deployment, the database file is created in the API's mounted `/data` directory, backed by the named `ticket-data` volume. This preserves the database across container recreation. The same volume is used for the Transformers.js model cache, avoiding another model download after a container restart. SQLite plus an in-memory vector scan is appropriate for this small, single-process prototype; it is not a distributed or multi-instance database design.
+
 ## Trade-offs
 
 - **Semantic embeddings over keyword overlap:** Embeddings can retrieve paraphrases and related descriptions that share few literal terms, matching the customer's “similar issue” need. The cost is model download/startup time, inference latency, and a score that is harder to interpret than exact keyword matches. Keyword or category signals could be added as complementary ranking features.

@@ -1,0 +1,12 @@
+.git
+.venv
+venv
+**/node_modules
+**/dist
+**/build
+**/.cache
+**/*.log
+semantic-search-api/ticket-knowledgebase.db*
+.env
+.env.*
+!.env.example

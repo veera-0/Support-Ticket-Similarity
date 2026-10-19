@@ -1,0 +1,7 @@
+node_modules
+.cache
+*.log
+ticket-knowledgebase.db*
+.env
+.env.*
+!.env.example

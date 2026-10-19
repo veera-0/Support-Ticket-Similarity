@@ -11,6 +11,7 @@ The active implementation is a React/Vite frontend backed by an Express API. The
 - [Repository layout](#repository-layout)
 - [Requirements](#requirements)
 - [Run the application](#run-the-application)
+- [Run with Docker](#run-with-docker)
 - [Ticket lifecycle](#ticket-lifecycle)
 - [HTTP API](#http-api)
 - [Data and persistence](#data-and-persistence)
@@ -103,6 +104,31 @@ npm run dev
 
 Vite prints the local development URL; by default it is `http://localhost:5173`. Open that URL in a browser.
 
+## Run with Docker
+
+Install Docker Desktop (or another Docker Compose-compatible runtime), then run these commands from the repository root:
+
+```powershell
+docker compose up --build -d
+```
+
+Open `http://localhost:8080`. The first startup may take several minutes while the API downloads the embedding model and seeds the database. Check startup progress with:
+
+```powershell
+docker compose logs -f api
+```
+
+Docker Compose stores the SQLite database and downloaded model cache in the `ticket-data` volume so they are retained across container restarts. To stop the app without removing data, run `docker compose down`. To also permanently remove the stored database and model cache, run `docker compose down --volumes`.
+
+To use a different host port, set `PORT` before starting Compose, for example:
+
+```powershell
+$env:PORT = "9000"
+docker compose up --build -d
+```
+
+Then open `http://localhost:9000`.
+
 ### App pages
 
 | URL | Page |
@@ -175,8 +201,7 @@ There is currently no automated test suite configured for either the frontend or
 
 ## Known limitations
 
-- The API URL is currently hard-coded in `ticket-dashboard-app/src/service/SemanticSearchService.jsx` as `http://localhost:8081/api`; production deployments need environment-based configuration.
-- The API allows browser requests from the local Vite/React development origins only. Configure CORS for the actual frontend origin when deploying.
+- The frontend API URL can be set with the `VITE_API_URL` build variable. Docker Compose serves the frontend and API on the same origin through an Nginx proxy; Vite proxies `/api` to the local API during development.
 - There is no authentication, authorization, role management, pagination, or production-grade operational monitoring.
 - Semantic search evaluates the in-memory ticket index. The API selects the top `topK` matches before the frontend filters them to resolved tickets, so fewer than five resolved results can be displayed even when more resolved matches exist at lower ranks.
 - Search is performed against historical ticket text and reports similarity; it does not establish that the old fix is appropriate for the new case.
