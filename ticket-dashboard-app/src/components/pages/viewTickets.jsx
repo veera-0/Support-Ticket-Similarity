@@ -98,8 +98,15 @@ function ViewTickets() {
                                     {resolvedTickets.map((ticket) => (
                                         <details className="resolved-ticket" key={ticket.ticket_id}>
                                             <summary className="resolved-ticket__summary">
-                                                <span className="resolved-ticket__id">
-                                                    {ticket.ticket_id || 'Ticket ID unavailable'}
+                                                <span className="resolved-ticket__identity">
+                                                    <span className="resolved-ticket__id">
+                                                        {ticket.ticket_id || 'Ticket ID unavailable'}
+                                                    </span>
+                                                    {ticket.category && (
+                                                        <span className="resolved-ticket__category">
+                                                            {ticket.category}
+                                                        </span>
+                                                    )}
                                                 </span>
                                                 <span className="resolved-ticket__toggle">
                                                     <span className="resolved-ticket__toggle-label">
@@ -112,7 +119,11 @@ function ViewTickets() {
                                                 </span>
                                             </summary>
                                             <div className="resolved-ticket__details">
-                                                <TicketProp ticket={ticket} showTicketId={false} />
+                                                <TicketProp
+                                                    ticket={ticket}
+                                                    showTicketId={false}
+                                                    expandable={false}
+                                                />
                                             </div>
                                         </details>
                                     ))}

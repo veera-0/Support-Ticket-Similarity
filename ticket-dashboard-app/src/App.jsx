@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Home from './components/pages/Home';
 import ViewTickets from './components/pages/viewTickets';
 import AddTicket from './components/main/newTicket/TicketForm';
+import TicketDetails from './components/pages/TicketDetails';
 
 function App() {
     return (
@@ -10,6 +11,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/view-all-tickets" element={<ViewTickets />} />
                 <Route path="/new-ticket" element={<AddTicket />} />
+                <Route path="/tickets/:ticketId" element={<TicketDetails />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>

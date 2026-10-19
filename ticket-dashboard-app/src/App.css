@@ -40,6 +40,30 @@
   font-size: 0.95rem;
 }
 
+.ticket-detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 25px;
+  color: #456be8;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ticket-detail-back:hover {
+  color: #244fcf;
+}
+
+.ticket-detail-page > .ticket-prop {
+  padding: 26px;
+  box-shadow: 0 8px 26px rgb(36 51 79 / 6%);
+}
+
+.ticket-detail-page > .ticket-prop .ticket-prop__subject {
+  font-size: 1.15rem;
+}
+
 .ticket-status-section + .ticket-status-section {
   margin-top: 34px;
 }
@@ -139,6 +163,23 @@
   font-size: 0.9rem;
   font-weight: 650;
   overflow-wrap: anywhere;
+}
+
+.resolved-ticket__identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.resolved-ticket__category {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #f1f4f9;
+  color: #59677d;
+  font-size: 0.7rem;
+  font-weight: 550;
 }
 
 .resolved-ticket__toggle {
