@@ -1,0 +1,20 @@
+.ticket-footer {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: auto;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-size: 14px;
+  text-align: center;
+}
+
+.ticket-footer p {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .ticket-footer {
+    padding: 16px;
+  }
+}
