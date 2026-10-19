@@ -7,6 +7,9 @@ import Footer from "../footer/Footer";
 import "../../App.css";
 
 function ViewTickets() {
+    useEffect(() => {
+        document.title = 'View All Tickets';
+    }, []);
 
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);

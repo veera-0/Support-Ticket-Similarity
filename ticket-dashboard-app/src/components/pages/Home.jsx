@@ -1,9 +1,14 @@
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
 import Main from "../main/Main";
+import {useEffect} from "react";
 
+function Home() {
 
-export default function Home() {
+    useEffect(() => {
+            document.title = 'FDE Support Ticket Dashboard';
+        }, []);
+
     return(
         <>
             <Header/>
@@ -12,3 +17,5 @@ export default function Home() {
         </>
     )
 }
+
+export default Home;

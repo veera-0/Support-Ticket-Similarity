@@ -107,7 +107,7 @@ export default function TicketProp({
                 hasValue(ticket.ticket_id) && (
                     <Link
                         className="ticket-prop__open-link"
-                        to={`/tickets/${encodeURIComponent(ticket.ticket_id)}`}
+                        to={`/view/tickets/${encodeURIComponent(ticket.ticket_id)}`}
                     >
                         View ticket <span aria-hidden="true">→</span>
                     </Link>

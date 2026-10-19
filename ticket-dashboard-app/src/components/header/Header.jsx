@@ -5,7 +5,7 @@ function Header() {
     return (
         <header className="site-header">
             <nav className="site-nav" aria-label="Main navigation">
-                <h1 className="site-nav__title">Ticket Dashboard</h1>
+                <h1 className="site-nav__title">Smart Ticket Dashboard</h1>
                 <div className="site-nav__links">
                     <NavLink
                         to="/"
@@ -22,7 +22,7 @@ function Header() {
                             isActive ? 'site-nav__link active' : 'site-nav__link'
                         }
                     >
-                        All Tickets
+                        Tickets
                     </NavLink>
                     <NavLink
                         to="/new-ticket"
@@ -30,7 +30,7 @@ function Header() {
                             isActive ? 'site-nav__link active' : 'site-nav__link'
                         }
                     >
-                        New Tickets
+                        Create Ticket
                     </NavLink>
                 </div>
             </nav>

@@ -11,7 +11,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/view-all-tickets" element={<ViewTickets />} />
                 <Route path="/new-ticket" element={<AddTicket />} />
-                <Route path="/tickets/:ticketId" element={<TicketDetails />} />
+                <Route path="/view/tickets/:ticketId" element={<TicketDetails />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>

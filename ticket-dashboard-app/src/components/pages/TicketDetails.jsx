@@ -27,6 +27,14 @@ function TicketDetails() {
     const [updatingFromTicketId, setUpdatingFromTicketId] = useState('');
     const [updateError, setUpdateError] = useState('');
     const [updateSuccess, setUpdateSuccess] = useState('');
+    const [isManualResolutionOpen, setIsManualResolutionOpen] = useState(false);
+    const [manualResolution, setManualResolution] = useState('');
+    const [isSavingManualResolution, setIsSavingManualResolution] = useState(false);
+
+    const needsManualResolution =
+        hasSearched &&
+        (similarTickets.length === 0 ||
+            similarTickets.every((similarTicket) => similarTicket.score < 0.75));
 
     useEffect(() => {
         let isCurrent = true;
@@ -77,7 +85,9 @@ function TicketDetails() {
             });
             setSimilarTickets(
                 searchResult.results.filter(
-                    (result) => result.ticket_id !== ticket.ticket_id
+                    (result) =>
+                        result.ticket_id !== ticket.ticket_id &&
+                        hasStatus(result, 'resolved')
                 )
             );
             setHasSearched(true);
@@ -116,6 +126,40 @@ function TicketDetails() {
         }
     }
 
+    async function handleSaveManualResolution(event) {
+        event.preventDefault();
+        const resolutionNotes = manualResolution.trim();
+
+        if (!ticket?.ticket_id || !resolutionNotes) {
+            setUpdateError('Enter a resolution before saving.');
+            return;
+        }
+
+        setIsSavingManualResolution(true);
+        setUpdateError('');
+        setUpdateSuccess('');
+
+        try {
+            const updatedTicket = await updateTicket(ticket.ticket_id, {
+                status: 'resolved',
+                resolution_notes: resolutionNotes,
+            });
+            setTicket((currentTicket) => ({ ...currentTicket, ...updatedTicket }));
+            setManualResolution(resolutionNotes);
+            setIsManualResolutionOpen(false);
+            setUpdateSuccess(`Ticket ${ticket.ticket_id} was resolved with your resolution notes.`);
+        } catch (error) {
+            console.error('Error saving manual ticket resolution:', error);
+            setUpdateError(error.message || 'Unable to save the resolution. Please try again.');
+        } finally {
+            setIsSavingManualResolution(false);
+        }
+    }
+
+    useEffect(() => {
+            document.title = 'View Ticket Details';
+        }, []);
+
     return (
         <div className="view-tickets-page">
             <Header />
@@ -151,7 +195,11 @@ function TicketDetails() {
                                     className="similar-tickets-button"
                                     type="button"
                                     onClick={handleFindSimilarTickets}
-                                    disabled={isSearching || Boolean(updatingFromTicketId)}
+                                    disabled={
+                                        isSearching ||
+                                        Boolean(updatingFromTicketId) ||
+                                        isSavingManualResolution
+                                    }
                                 >
                                     {isSearching ? 'Searching history...' : 'Find similar tickets'}
                                 </button>
@@ -207,12 +255,16 @@ function TicketDetails() {
                                                     )}
                                                     {hasStatus(ticket, 'open') &&
                                                         hasStatus(similarTicket, 'resolved') &&
+                                                        similarTicket.score > 0.75 &&
                                                         similarTicket.resolution_notes && (
                                                             <button
                                                                 className="similar-ticket-result__apply"
                                                                 type="button"
                                                                 onClick={() => handleApplyResolution(similarTicket)}
-                                                                disabled={Boolean(updatingFromTicketId)}
+                                                                disabled={
+                                                                    Boolean(updatingFromTicketId) ||
+                                                                    isSavingManualResolution
+                                                                }
                                                             >
                                                                 {updatingFromTicketId === similarTicket.ticket_id
                                                                     ? 'Resolving...'
@@ -228,6 +280,75 @@ function TicketDetails() {
                                         No similar historical tickets were found.
                                     </p>
                                 )
+                            )}
+
+                            {needsManualResolution && hasStatus(ticket, 'open') && (
+                                <section className="manual-resolution" aria-labelledby="manual-resolution-title">
+                                    <div className="manual-resolution__intro">
+                                        <div>
+                                            <h3 id="manual-resolution-title">
+                                                No strong historical match
+                                            </h3>
+                                            <p>
+                                                All resolved matches scored below 75%. Add the resolution
+                                                yourself to close this ticket.
+                                            </p>
+                                        </div>
+                                        {!isManualResolutionOpen && (
+                                            <button
+                                                className="manual-resolution__toggle"
+                                                type="button"
+                                                onClick={() => {
+                                                    setIsManualResolutionOpen(true);
+                                                    setUpdateError('');
+                                                }}
+                                            >
+                                                Add resolution manually
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {isManualResolutionOpen && (
+                                        <form
+                                            className="manual-resolution__form"
+                                            onSubmit={handleSaveManualResolution}
+                                        >
+                                            <label htmlFor="manual-resolution-notes">
+                                                Resolution notes <span aria-hidden="true">*</span>
+                                            </label>
+                                            <textarea
+                                                id="manual-resolution-notes"
+                                                value={manualResolution}
+                                                onChange={(event) => setManualResolution(event.target.value)}
+                                                placeholder="Describe how the issue was resolved..."
+                                                rows={5}
+                                                required
+                                            />
+                                            <div className="manual-resolution__actions">
+                                                <button
+                                                    className="manual-resolution__cancel"
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setIsManualResolutionOpen(false);
+                                                        setUpdateError('');
+                                                    }}
+                                                    disabled={isSavingManualResolution}
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    className="manual-resolution__save"
+                                                    type="submit"
+                                                    disabled={isSavingManualResolution || !manualResolution.trim()}
+                                                >
+                                                    {isSavingManualResolution
+                                                        ? 'Saving resolution...'
+                                                        : 'Save resolution & resolve'}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    )}
+                                </section>
                             )}
                         </section>
                     </>
