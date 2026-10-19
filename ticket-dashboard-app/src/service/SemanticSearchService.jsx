@@ -61,25 +61,26 @@ export async function healthCheck() {
         });
 }
 
-export async function semanticSearch(query) {
-    return fetch(`${API_URL}/semantic-search`, {
+export async function semanticSearch({ subject, description = '', topK = 5, minScore = 0 }) {
+    const response = await fetch(`${API_URL}/tickets/similar`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ query }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Error performing semantic search: ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .catch(error => {
-            console.error('Error performing semantic search:', error);
-            throw error;
-        });
+        body: JSON.stringify({ subject, description, topK, minScore }),
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+        throw new Error(result.error || `Error performing semantic search: ${response.statusText}`);
     }
+
+    if (!Array.isArray(result.results)) {
+        throw new Error('Invalid similarity search response: expected a results array');
+    }
+
+    return result;
+}
 
 export async function updateTicket(ticket_id, updatedTicket) {
     return fetch(`${API_URL}/update/ticket/${ticket_id}`, {
