@@ -83,21 +83,18 @@ export async function semanticSearch({ subject, description = '', topK = 5, minS
 }
 
 export async function updateTicket(ticket_id, updatedTicket) {
-    return fetch(`${API_URL}/update/ticket/${ticket_id}`, {
+    const response = await fetch(`${API_URL}/update/ticket/${encodeURIComponent(ticket_id)}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedTicket),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Error updating ticket: ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .catch(error => {
-            console.error('Error updating ticket:', error);
-            throw error;
-        });
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+        throw new Error(result.error || `Error updating ticket: ${response.statusText}`);
+    }
+
+    return result;
 }

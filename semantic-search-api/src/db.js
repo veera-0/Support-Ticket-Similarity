@@ -81,8 +81,11 @@ export function updateTicket(ticket_id, ticketData) {
     WHERE ticket_id = @ticket_id
   `);
   updateStmt.run({
-    ...ticketData,
-    ticket_id: ticket_id
+    category: ticketData.category ?? null,
+    resolution_notes: ticketData.resolution_notes ?? null,
+    tags: JSON.stringify(Array.isArray(ticketData.tags) ? ticketData.tags : []),
+    status: ticketData.status ?? 'open',
+    ticket_id,
   });
 }
 
@@ -101,4 +104,3 @@ export function rowToTicket(r) {
 }
 
 export default db;
-

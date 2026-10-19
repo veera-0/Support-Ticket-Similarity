@@ -3,8 +3,17 @@ import { Link, useParams } from 'react-router-dom';
 import Footer from '../footer/Footer';
 import Header from '../header/Header';
 import TicketProp from '../main/ticketProp/TicketProp';
-import { getTicketById, semanticSearch } from '../../service/SemanticSearchService';
+import {
+    getTicketById,
+    semanticSearch,
+    updateTicket,
+} from '../../service/SemanticSearchService';
 import '../../App.css';
+
+function hasStatus(ticket, expectedStatus) {
+    return typeof ticket?.status === 'string' &&
+        ticket.status.trim().toLowerCase() === expectedStatus;
+}
 
 function TicketDetails() {
     const { ticketId } = useParams();
@@ -15,6 +24,9 @@ function TicketDetails() {
     const [hasSearched, setHasSearched] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const [searchError, setSearchError] = useState('');
+    const [updatingFromTicketId, setUpdatingFromTicketId] = useState('');
+    const [updateError, setUpdateError] = useState('');
+    const [updateSuccess, setUpdateSuccess] = useState('');
 
     useEffect(() => {
         let isCurrent = true;
@@ -61,7 +73,7 @@ function TicketDetails() {
             const searchResult = await semanticSearch({
                 subject: ticket.subject,
                 description: ticket.description || '',
-                topK: 20,
+                topK: 5,
             });
             setSimilarTickets(
                 searchResult.results.filter(
@@ -74,6 +86,33 @@ function TicketDetails() {
             setSearchError(error.message || 'Unable to find similar tickets. Please try again.');
         } finally {
             setIsSearching(false);
+        }
+    }
+
+    async function handleApplyResolution(similarTicket) {
+        if (!ticket?.ticket_id || !similarTicket.resolution_notes) {
+            setUpdateError('This ticket or historical resolution is missing required information.');
+            return;
+        }
+
+        setUpdatingFromTicketId(similarTicket.ticket_id);
+        setUpdateError('');
+        setUpdateSuccess('');
+
+        try {
+            const updatedTicket = await updateTicket(ticket.ticket_id, {
+                status: 'resolved',
+                resolution_notes: similarTicket.resolution_notes,
+            });
+            setTicket((currentTicket) => ({ ...currentTicket, ...updatedTicket }));
+            setUpdateSuccess(
+                `Ticket ${ticket.ticket_id} was resolved using the resolution from ${similarTicket.ticket_id}.`
+            );
+        } catch (error) {
+            console.error('Error resolving ticket from historical resolution:', error);
+            setUpdateError(error.message || 'Unable to update this ticket. Please try again.');
+        } finally {
+            setUpdatingFromTicketId('');
         }
     }
 
@@ -112,7 +151,7 @@ function TicketDetails() {
                                     className="similar-tickets-button"
                                     type="button"
                                     onClick={handleFindSimilarTickets}
-                                    disabled={isSearching}
+                                    disabled={isSearching || Boolean(updatingFromTicketId)}
                                 >
                                     {isSearching ? 'Searching history...' : 'Find similar tickets'}
                                 </button>
@@ -121,6 +160,18 @@ function TicketDetails() {
                             {searchError && (
                                 <p className="view-tickets-message" role="alert">
                                     {searchError}
+                                </p>
+                            )}
+
+                            {updateError && (
+                                <p className="view-tickets-message" role="alert">
+                                    {updateError}
+                                </p>
+                            )}
+
+                            {updateSuccess && (
+                                <p className="ticket-update-success" role="status">
+                                    {updateSuccess}
                                 </p>
                             )}
 
@@ -148,11 +199,27 @@ function TicketDetails() {
                                                         </p>
                                                     )}
                                                 </div>
-                                                {similarTicket.status && (
-                                                    <span className="similar-ticket-result__status">
-                                                        {similarTicket.status}
-                                                    </span>
-                                                )}
+                                                <div className="similar-ticket-result__actions">
+                                                    {similarTicket.status && (
+                                                        <span className="similar-ticket-result__status">
+                                                            {similarTicket.status}
+                                                        </span>
+                                                    )}
+                                                    {hasStatus(ticket, 'open') &&
+                                                        hasStatus(similarTicket, 'resolved') &&
+                                                        similarTicket.resolution_notes && (
+                                                            <button
+                                                                className="similar-ticket-result__apply"
+                                                                type="button"
+                                                                onClick={() => handleApplyResolution(similarTicket)}
+                                                                disabled={Boolean(updatingFromTicketId)}
+                                                            >
+                                                                {updatingFromTicketId === similarTicket.ticket_id
+                                                                    ? 'Resolving...'
+                                                                    : 'Use resolution & resolve'}
+                                                            </button>
+                                                        )}
+                                                </div>
                                             </article>
                                         ))}
                                     </div>

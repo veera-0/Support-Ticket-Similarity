@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 
 import { embed, ticketText } from './embedder.js';
-import { insertTicket, loadAllTickets, getTicketById } from './db.js';
+import { insertTicket, loadAllTickets, getTicketById, updateTicket } from './db.js';
 import seedIfEmpty, { cosine_similarity, matchLabel, nextTicketId } from './Utils.js';
 
 
@@ -131,7 +131,7 @@ app.post('/api/add/ticket', async (req, res) => {
 
 //update the existing ticket based on the anslysis
 app.post('/api/update/ticket/:id', async (req, res) => {
-  console.log(`Received request to update ticket ${req.params.id}:`, req.body);
+  console.log(`Received request to update ticket ${req.params.id}:`);
   try{
     const ticketId = req.params.id;
     const retlatedTicket = getTicketById(ticketId);
@@ -143,14 +143,19 @@ app.post('/api/update/ticket/:id', async (req, res) => {
       ...retlatedTicket,
       category: req.body.category ?? retlatedTicket.category,
       resolution_notes: req.body.resolution_notes ?? retlatedTicket.resolution_notes,
-      tags: Array.isArray(req.body.tags) ? req.body.tags : retlatedTicket.tags,
+      tags: retlatedTicket.tags,
       status: req.body.status ?? retlatedTicket.status,
     }
 
+    const ticketIndex = index.findIndex((item) => item.ticket_id === ticketId);
+    if (ticketIndex === -1) {
+      return res.status(404).json({ error: 'Ticket not found in search index' });
+    }
+
     //update the record in the db
-    console.log(`Updating ticket ${ticketId} in the database with data:`, ticket);
+    console.log(`Updating ticket ${ticketId} in the database with status: ${ticket.status}`);
     updateTicket(ticketId, ticket);
-    index.push({ ...ticket, vector: retlatedTicket.vector }); 
+    index[ticketIndex] = { ...ticket, vector: retlatedTicket.vector };
     res.status(200).json(ticket);
 
   } catch(err){
