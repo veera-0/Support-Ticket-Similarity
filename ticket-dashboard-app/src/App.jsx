@@ -1,32 +1,18 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
-import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import Main from './components/main/Main';
 
 function App() {
-  
-
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' Component={Home}/>
-          <Route path='/home' Component={Home}/>
-          <Route path='/projects' Component={Project}/>
-          <Route path='/skills' Component={SkillsPage}/>
-          <Route path='/about' Component={AboutPage}/>
-          <Route path='/badges' Component={Badges}/>
-
-          <Route
-            path="/*"
-            element={<Navigate to="/" replace />}
-          />
-        </Routes>
-      </BrowserRouter>
-    </>
-  )
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Main />} />
+                <Route path="/home" element={<Main />} />
+                <Route path="/tickets" element={<Main />} />
+                <Route path="/new-tickets" element={<Main />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
-export default App
+export default App;
